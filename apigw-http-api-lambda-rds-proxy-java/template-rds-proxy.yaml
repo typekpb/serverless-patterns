@@ -17,7 +17,8 @@ Mappings:
       dbEngine: aurora-mysql
       dbFamily: aurora-mysql5.7
       port: 3306
-      nodeType: db.r5.large
+      # nodeType: db.r5.large
+      nodeType: db.t4g.medium
 
 Resources:
   # VPC for creating database and proxy
@@ -215,23 +216,23 @@ Resources:
           Value: !Sub "${AWS::StackName}-mysql-node-1"
 
   # Reader node instance for RDS Aurora Cluster
-  dbNode2:
-    Type: "AWS::RDS::DBInstance"
-    Properties:
-      DBClusterIdentifier: !Ref dbCluster
-      DBInstanceIdentifier: !Sub "${AWS::StackName}-mysql-node-2"
-      CopyTagsToSnapshot: true
-      DBInstanceClass: !FindInMap [ ClusterSettings, global, nodeType ]
-      DBParameterGroupName: !Ref pgNodeParams
-      Engine: !FindInMap [ ClusterSettings, global, dbEngine ]
-      MonitoringInterval: 1
-      MonitoringRoleArn: !GetAtt roleEnhancedMonitoring.Arn
-      PubliclyAccessible: false
-      EnablePerformanceInsights: true
-      PerformanceInsightsRetentionPeriod: 7
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName}-mysql-node-2"
+  # dbNode2:
+  #   Type: "AWS::RDS::DBInstance"
+  #   Properties:
+  #     DBClusterIdentifier: !Ref dbCluster
+  #     DBInstanceIdentifier: !Sub "${AWS::StackName}-mysql-node-2"
+  #     CopyTagsToSnapshot: true
+  #     DBInstanceClass: !FindInMap [ ClusterSettings, global, nodeType ]
+  #     DBParameterGroupName: !Ref pgNodeParams
+  #     Engine: !FindInMap [ ClusterSettings, global, dbEngine ]
+  #     MonitoringInterval: 1
+  #     MonitoringRoleArn: !GetAtt roleEnhancedMonitoring.Arn
+  #     PubliclyAccessible: false
+  #     EnablePerformanceInsights: true
+  #     PerformanceInsightsRetentionPeriod: 7
+  #     Tags:
+  #       - Key: Name
+  #         Value: !Sub "${AWS::StackName}-mysql-node-2"
 
   # IAM Role to be used by RDS Proxy for fetching secrets
   dbProxyRole:
@@ -281,7 +282,7 @@ Resources:
     DependsOn:
       - dbCluster
       - dbNode1
-      - dbNode2
+      # - dbNode2
     Properties:
       DBProxyName: !Ref dbProxy
       DBClusterIdentifiers: [ !Ref dbCluster ]
